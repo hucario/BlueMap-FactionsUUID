@@ -5,7 +5,7 @@ plugins {
     id ("io.papermc.hangar-publish-plugin") version "0.0.5"
 }
 
-group = "codes.antti"
+group = "io.hucar"
 version = "2.0.0"
 
 repositories {

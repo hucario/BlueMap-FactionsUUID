@@ -1,3 +1,6 @@
+// TODO: ADD WAY TOO MANY getLogger().info("your message");
+
+
 package io.hucar.bluemapfactions;
 
 import java.time.Instant;
@@ -125,8 +128,15 @@ public final class BlueMapFactions extends JavaPlugin {
 
         t = t.replace("%name%", fac.getTag());
 
-        t = t.replace("%leader%", fac.getFPlayerAdmin().getName());
-        t = t.replace("%leader_uuid%", fac.getFPlayerAdmin().getId());
+        FPlayer leader = fac.getFPlayerAdmin();
+
+        if (leader == null) {
+            getLogger().info("no leader for " + fac.getTag());
+        } else {
+            t = t.replace("%leader%", leader.getName());
+            t = t.replace("%leader_uuid%", leader.getId());
+        }
+
 
         int maxMembers = this.config.getInt("max-listed-members");
         String templateSplit = this.config.getString("members-split");
