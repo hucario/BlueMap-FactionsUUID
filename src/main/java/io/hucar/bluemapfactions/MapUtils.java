@@ -5,7 +5,7 @@
  * Changes:    Class renamed, unused methods removed and support for non 16x16 chunks
  */
 
-package codes.antti.bluemaptowny;
+package io.hucar.bluemapfactions;
 
 import com.flowpowered.math.vector.Vector2d;
 import com.flowpowered.math.vector.Vector2i;

@@ -1,8 +1,8 @@
-name: BlueMap-Towny
-description: 'BlueMap addon for showing your Towny towns on your beautiful map'
+name: BlueMap-Factions
+description: 'BlueMap addon for showing Factions on your map'
 version: '${version}'
-author: 'Antti <antti@antti.codes>'
-main: codes.antti.bluemaptowny.BlueMapTowny
+author: 'Hucario <gritty.pen4969@hucar.io>, Antti <antti@antti.codes>'
+main: io.hucar.bluemapfactions.BlueMapFactions
 api-version: 1.16
 folia-supported: true
-depend: [ BlueMap, Towny ]
+depend: [ BlueMap, Factions ]

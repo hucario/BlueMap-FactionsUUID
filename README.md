@@ -1,111 +1,135 @@
-# BlueMap-Towny
+# BlueMap-Factions
 
-> *[BlueMap](https://github.com/BlueMap-Minecraft/BlueMap) addon for showing your [Towny](https://github.com/TownyAdvanced/Towny) towns on your beautiful map*
+> *[BlueMap](https://github.com/BlueMap-Minecraft/BlueMap) addon for showing [Factions](https://github.com/TownyAdvanced/Towny) on your map*
 
-
-[![GitHub Total Downloads](https://img.shields.io/github/downloads/Chicken/BlueMap-Towny/total?label=Downloads&color=success "Click here to download the plugin")](https://github.com/Chicken/BlueMap-Towny/releases/latest)
-
-Configuration, placeholders and main features heavily inspired by Dynmap-Towny.  
-Has support for holes in claims and claims outside main town.  
-Does not have support for external plugins hooking into placeholders.
-
-<details>
-<summary><span style="font-size:1.5em;">Images</span></summary>
-
-![flat view of a town](.github/images/1.png)
-
-![perspective view of a town](.github/images/2.png)
-
-</details>
+I stole almost all of this from [BlueMap-Towny](https://github.com/Chicken/BlueMap-Towny).
+This is a one-off plugin meant for my server running FactionsUUID, so don't expect much support (especially as I do not usually program in Java!).
+That said, the entire plugin is around 300 lines long, so it should be *mostly* bug-free. If you *do* need support, I can usually answer within a few days.
+Contact me at gritty.pen4969@hucar.io or @hucario on Discord.
 
 ## Installation
 
-Put the plugin jar file inside your plugins folder and have both Towny and BlueMap installed.
+Put the plugin jar file inside your plugins folder and have both Factions and BlueMap installed.
 
 ## Config
 
-```yml
-# BlueMap-Towny configuration
-# https://github.com/Chicken/BlueMap-Towny#config
+```yaml
+# BlueMap-Factions configuration
+# https://github.com/hucario/BlueMap-Factions#config
 
 # Seconds between checks for marker updates
 update-interval: 30
-# Set by /n set mapcolor
-dynamic-nation-colors: true
-# Set by /t set mapcolor
-dynamic-town-colors: true
-# HTML for town popup, placeholders documented in README
-popup: '<span style="font-size: 120%">%name% (%nation%)</span><br><span>Mayor <strong>%mayor%</strong></span><br><span>Residents <strong>%residents%</strong></span><br><span>Bank <strong>%bank%</strong></span>'
-# HTML for War popup(SiegeWar Only), placeholders documented in README
-popup-siege: '<span style="font-size: 120%"><strong>Siege: %attacker% vs %defender%</strong></span><br><hr><span>Town <strong>%name%</strong></span><br><span>Type <strong>%siege_type%</strong></span><br><span>War Chest <strong>%war_chest%</strong></span><br><span>Siege Progress <strong>%sessions_completed%/%sessions_total%</strong></span><br><span>Siege Status <strong>%siege_status%</strong></span><br><span>Siege Balance <strong>%siege_balance%</strong></span><br><span>Banner Control <strong>%banner_control%</strong></span><br><span>Battle Points <strong>%battle_points_attacker% / %battle_points_defender%</strong></span><br><span>Battle Time Left <strong>%battle_time_left%</strong></span>'
+
+
+
+# Max members listed in %members%, %member_display_names%, and %member_uuids%
+max-listed-members: 8
+
+# Divider between members in %members%, %member_display_names%, and %member_uuids%
+members-split: '`,`'
+
+
+dynamic-faction-colors: true
+special-factions:
+  factionNameHere:
+    fill: 'red'
+    line: 'blue'
+    discord: 'https://discord.gg/link'
+    icon: 'https://http.cat/200'
+    banner: 'https://source.unsplash.com/random'
+
+
 style:
-  # Y-level to put markers at
-  y-level: 62
-  # Town border settings
+  # default border settings
   border-color: '#FF0000'
   border-opacity: 0.8
   border-width: 3
-  # Town fill settings
+  # default fill setting
   fill-color: '#FF0000'
   fill-opacity: 0.35
   # Path to icons on web or a link
   # Town home
   home-icon-enabled: false
   home-icon: assets/house.png
-  # Nation capital
-  capital-icon-enabled: false
-  capital-icon: assets/king.png
-  # Icon during war
-  war-icon-enabled: false
-  war-icon: assets/war.png
-  # Icon for ruined towns
-  ruined-icon-enabled: false
-  ruined-icon: assets/ruined.png
+
+translation:
+  and-x-more: '... and %1 more'
+
+# HTML for town popup, placeholders documented in README
+# This is a multiline string!
+# See the rules for editing this at https://yaml-multiline.info/
+popup: |-
+  <div class="nationPopup">
+    <script>
+      (() => {
+        const facMembers = [`%members%`];
+        const facMemberUUIDs = [`%member_uuids%`];
+        const facMemberDisplays = [`%member_display_names%`];
+        const leaderUUID = "%leader_uuid%";
+
+        for (let i in facMembers) {
+          const memberElem = document.createElement("div");
+          memberElem.classList.add("member");
+          if (facMemberUUIDs[i] === leaderUUID) {
+            memberElem.classList.add("leader");
+          }
+          const imgElem = document.createElement("img");
+          imgElem.src = `https://minotar.net/avatar/${facMemberUUIDs[i]}/100.png`;
+          imgElem.classList.add("memberFace");
+          memberElem.appendChild(imgElem);
+
+          const displayNameElem = document.createElement("span");
+          displayNameElem.classList.add("displayName");
+          displayNameElem.innerText = facMemberDisplays[i];
+          memberElem.appendChild(displayNameElem);
+
+          if (facMembers[i] !== facMemberDisplays[i]) {
+            const userNameElem = document.createElement("span");
+            userNameElem.classList.add("userName");
+            userNameElem.innerText = facMembers[i];
+            memberElem.appendChild(userNameElem);
+          }
+          document.currentScript.parentElement.querySelector(".members").appendChild(memberElem);
+        }
+      })();
+    </script>
+    <span class="title">%name%</span>
+    <p class="description">%description%</p>
+    <div class="members"></div>
+    <div class="balance">$%balance%</div>
+  </div>
+  
+  
 ```
 
 ### Popup placeholders
 
 | Placeholder              | Content                                                                |
 |--------------------------|------------------------------------------------------------------------|
-| `%name%`                 | Town name                                                              |
-| `%mayor%`                | Town mayor                                                             |
-| `%residents%`            | Town residents                                                         |
-| `%assistants%`           | Town assistants                                                        |
-| `%residentdisplaynames%` | Town residents but display names                                       |
-| `%residentcount%`        | Number of town residents                                               |
-| `%founded%`              | Town founding date                                                     |
-| `%board%`                | Town board text                                                        |
-| `%trusted%`              | Town trusted residents                                                 |
-| `%tax%`                  | Town tax                                                               |
-| `%bank%`                 | Town bank balance                                                      |
-| `%nation%`               | Nation of the town                                                     |
-| `%nationstatus%`         | Capital/Member of ...                                                  |
-| `%public%`               | Town publicity status                                                  |
-| `%peaceful%`             | Is the town peaceful                                                   |
-| `%flags%`                | Flags of the town (pvp, mobs...)                                       |
-| `%war%`                  | Has active war (Works for EventWar/FlagWar)                            |
-| `%town_culture%`         | Culture of town, see https://github.com/TownyAdvanced/TownyCultures    |
-| `%town_resources%`       | Resources of town, see https://github.com/TownyAdvanced/TownyResources |
+| `%name%`                 | Faction name                                                           |
+| `%leader%`               | Faction leader username                                                |
+| `%leader_uuid%`          | Faction leader uuid
+| `%members%`              | Faction members, max count `CONFIG.max-listed-members`, separated by `CONFIG.members-split` |
+| `%member_display_names%` | Same as before, but their nicks |
+| `%member_uuids%`         | Same as before, but their UUIDs |
+| `%mods%`                 | Faction moderators |
+| `%membercount%`          | Faction member count |
+| `%founded%`              | Faction creation date/time, `dd-MM-yyyy HH:mm:ss` |
+| `%description%`          | Faction description |
+| `%trusted%`              | Trusted (regular) members (i.e. not Recruits, mods, or admins) |
+| `%balance%`              | Faction balance, if enabled |
+| `%open%`                 | Is faction open? |
+| `%peaceful%`             | Is faction peaceful? true/false |
+| `%discord_link%`         | Only settable in config, reads `CONFIG.special-factions.[FACTION_TAG].discord` |
+| `%icon_url%`             | Only settable in config, reads `CONFIG.special-factions.[FACTION_TAG].icon` |
+| `%banner_url%`           | Only settable in config, reads `CONFIG.special-factions.[FACTION_TAG].banner` |
 
-### [SiegeWar](https://github.com/TownyAdvanced/SiegeWar) Placeholders
 
-| Placeholder                | Content                                     |
-|----------------------------|---------------------------------------------|
-| `%attacker%`               | Attacking town/nation in war                |
-| `%defender%`               | Defending town/nation in war                |
-| `%siege_type%`             | Type of Siege (Conquest, Revolt etc)        |
-| `%sessions_completed%`     | Battle Sessions completed                   |
-| `%session_total%`          | Total amount of Battle Sessions             |
-| `%war_chest%`              | War Chest (If economy is enabled for Towny) |
-| `%banner_control%`         | the ones controlling the banner             |
-| `%siege_status%`           | Siege status                                |
-| `%siege_balance%`          | Siege balance                               |
-| `%battle_points_attacker%` | Battle points on the attacker's side        |
-| `%battle_points_defender%` | Battle points on the defender's side        |
-| `%battle_time_left%`       | Time left in the Battle Session             |
 
 ## Building
 
-`./gradlew clean build`
+```
+./gradlew clean build
+```
 
 Output in `build/libs/`
