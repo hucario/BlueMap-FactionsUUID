@@ -20,7 +20,7 @@ repositories {
         setUrl ("https://oss.sonatype.org/content/groups/public/")
     }
     maven {
-        setUrl ("https://repo.glaremasters.me/repository/towny/")
+        setUrl ("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
     maven {
         setUrl ("https://jitpack.io/")
@@ -31,12 +31,12 @@ repositories {
 }
 
 dependencies {
+    implementation ("com.github.TechnicJelle:BMUtils:v1.1")
     compileOnly ("dev.folia:folia-api:1.19.4-R0.1-SNAPSHOT")
-    compileOnly ("com.palmergames.bukkit.towny:towny:0.98.3.0")
     compileOnly ("com.github.BlueMap-Minecraft:BlueMapAPI:v2.4.0")
-    compileOnly ("com.github.TownyAdvanced:SiegeWar:2.4.0")
     compileOnly ("com.massivecraft:Factions:1.6.9.5-U0.6.30")
     compileOnly ("us.dynmap:DynmapCoreAPI:3.4")
+    compileOnly ("me.clip:placeholderapi:2.11.3")
 }
 
 val javaTarget = 17

@@ -1,0 +1,192 @@
+.nationPopup {
+	display: flex;
+	align-items: stretch;
+	flex-direction: column;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	overflow: clip;
+}
+
+.nationPopup .title {
+	font-size: 2rem;
+	font-weight: 700;
+	font-family: Superclarendon, 'Bookman Old Style', 'URW Bookman', 'URW Bookman L', 'Georgia Pro', Georgia, serif;
+	line-height: 1;
+}
+
+body #map-container .bm-marker-labelpopup {
+	background: linear-gradient(45deg, #4a0000, #002555);
+	border-radius: 0.5rem;
+	max-width: 100%;
+	width: 30rem;
+	padding: 0;
+}
+
+.nationPopup p.description {
+	margin: 0;
+	font-size: 1.1rem;
+	line-height: 1.5;
+	font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+	letter-spacing: -0.04ch;
+	font-style: italic;
+}
+
+label.membersLabel {
+	font-family: system-ui;
+	opacity: 0.8;
+	text-transform: uppercase;
+}
+
+div.members {
+	padding: 0.2rem 0;
+	padding-bottom: 0;
+	max-width: 100%;
+	margin-bottom: 1rem;
+}
+
+div.member {
+	height: 3rem;
+	padding: 0.25rem;
+	box-sizing: border-box;
+	display: inline-grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	grid-template-columns: auto auto;
+	gap: 0 0.5rem;
+	align-items: center;
+	background-color: rgba(255, 255, 255, 0.1);
+	border-radius: 0.3rem;
+	border: solid 2px rgba(255, 255, 255, 0.1);
+	min-width: 20ch;
+	justify-content: start;
+	margin-right: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.memberFace {
+	grid-column: 1;
+	grid-row: 1/3;
+	width: 2.3rem;
+	height: 2.3rem;
+}
+
+.member .userName {
+	font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+	font-size: 0.8rem;
+	user-select: all;
+	color: hsla(0, 0%, 100%, 0.6);
+	line-height: 1.5;
+	align-self: end;
+}
+
+.balance {
+	font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+	display: flex;
+	align-items: center;
+	flex-grow: 1;
+	min-width: 49%;
+	box-sizing: border-box;
+	background-color: #001105;
+	border-radius: 0.7rem;
+}
+
+.member .displayName {
+	font-size: 1.2rem;
+	font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+	font-weight: 700;
+}
+
+.popupBanner {
+	margin: -0.5rem -1rem;
+	height: 7rem;
+	object-fit: cover;
+	object-position: center -2rem;
+	mask-image: linear-gradient(180deg, rgb(0, 0, 0) 80%, transparent 100%);
+	margin-bottom: -1.1rem;
+}
+
+div.member.leader {
+	border-color: rgba(255, 215, 0, 0.2);
+	box-shadow: 0 0 0.5rem 0 rgba(247, 255, 0, 0.2);
+	background: linear-gradient(135deg, rgba(255, 230, 96, 0.31), rgba(164, 161, 2, 0.24));
+}
+
+.popupIcon {
+	height: 4rem;
+	width: 4rem;
+	object-fit: cover;
+	border-radius: 0.5rem;
+}
+
+.iconGroup {
+	display: flex;
+	align-items: center;
+	margin-bottom: 1.5rem;
+	z-index: 2;
+	gap: 0.8rem;
+}
+
+.discordLink {
+	display: flex;
+	gap: 0.6rem;
+	align-items: center;
+	padding: 0.8rem 1.2rem;
+	background-color: #5865F2;
+	border-radius: 0.7rem;
+	text-decoration: none;
+	font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+	font-weight: 600;
+	flex-grow: 1;
+	min-width: 49%;
+	box-sizing: border-box;
+}
+
+.discordImg {
+	height: 1.4rem;
+}
+
+.buttonsRow {
+	display: flex;
+	align-items: stretch;
+	gap: 0.5rem;
+}
+
+.balance .rightGroup {
+	margin-left: auto;
+	font-weight: 500;
+	font-size: 1.1rem;
+	border-left: solid 2px rgba(255, 255, 255, 0.05);
+	height: 100%;
+	display: flex;
+	align-items: center;
+	padding: 0.2rem 0.7rem;
+	box-sizing: border-box;
+	gap: 0.4ch;
+}
+
+.balance .actualBalance {
+	font-weight: 700;
+	font-size: 1.4rem;
+	line-height: 1.1;
+	padding: 0.8rem 1.2rem;
+	color: #00e800;
+}
+
+.xMoreMembers {
+	height: 3rem;
+	padding: 0.55rem;
+	box-sizing: border-box;
+	display: inline-grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	grid-template-columns: auto auto;
+	gap: 0 0.5rem;
+	align-items: center;
+	background-color: rgb(32, 32, 32);
+	border-radius: 0.3rem;
+	border: solid 2px rgba(255, 255, 255, 0.1);
+	justify-content: center;
+	margin-right: 0.5rem;
+	margin-bottom: 0.5rem;
+	vertical-align: top;
+	align-content: center;
+	font-weight: 700;
+}

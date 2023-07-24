@@ -1,6 +1,3 @@
-// TODO: ADD WAY TOO MANY getLogger().info("your message");
-
-
 package io.hucar.bluemapfactions;
 
 import java.time.Instant;
@@ -16,12 +13,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.flowpowered.math.vector.Vector2d;
@@ -42,6 +39,10 @@ import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.FPlayer;
 
+import com.technicjelle.BMUtils;
+
+import me.clip.placeholderapi.PlaceholderAPI;
+
 public final class BlueMapFactions extends JavaPlugin {
     private final Map<UUID, MarkerSet> factionMarkerSets = new ConcurrentHashMap<>();
     private Configuration config;
@@ -49,12 +50,24 @@ public final class BlueMapFactions extends JavaPlugin {
     @Override
     public void onEnable() {
         boolean isFolia = isFolia();
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getLogger().warning("Could not find PlaceholderAPI! This plugin is required.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        getLogger().info("Enabled.");
 
         BlueMapAPI.onEnable((api) -> {
             reloadConfig();
             saveDefaultConfig();
             this.config = getConfig();
             initMarkerSets();
+            
+            try {
+                BMUtils.copyJarResourceToBlueMap(api, getClassLoader(), "factions.css", "css/factions.css", false);
+                BMUtils.copyJarResourceToBlueMap(api, getClassLoader(), "discordIcon.svg", "img/discordIcon.svg", false);
+            } catch (IOException ignored) {}
 
             if (isFolia) {
                 Bukkit.getServer().getGlobalRegionScheduler().runAtFixedRate(this, task -> this.updateMarkers(), 1L,
@@ -72,7 +85,7 @@ public final class BlueMapFactions extends JavaPlugin {
             }
         });
     }
-
+    
     private static boolean isFolia() {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
@@ -103,7 +116,7 @@ public final class BlueMapFactions extends JavaPlugin {
         if (this.config.getBoolean("dynamic-faction-colors")) {
             String hex = this.config.getString("special-factions." + fac.getTag() + ".fill");
             if (hex != null && !hex.equals("")) {
-                return new Color("#" + hex + opacity);
+                return new Color(hex + opacity);
             }
         }
 
@@ -116,7 +129,7 @@ public final class BlueMapFactions extends JavaPlugin {
         if (this.config.getBoolean("dynamic-faction-colors")) {
             String hex = this.config.getString("special-factions." + fac.getTag() + ".line");
             if (hex != null && !hex.equals("")) {
-                return new Color("#" + hex + opacity);
+                return new Color(hex + opacity);
             }
         }
 
@@ -137,43 +150,71 @@ public final class BlueMapFactions extends JavaPlugin {
             t = t.replace("%leader_uuid%", leader.getId());
         }
 
-
         int maxMembers = this.config.getInt("max-listed-members");
         String templateSplit = this.config.getString("members-split");
 
-        String[] members = fac.getFPlayers().stream().map(FPlayer::getName).toArray(String[]::new);
+        String[] members = fac.getFPlayers().stream().map((p) -> {
+            return PlaceholderAPI.setPlaceholders(
+                p.getOfflinePlayer(),
+                this.config.getString("eachMemberHTML")
+                    .replace("%is_leader%", 
+                        (
+                            (p.getRole() == Role.ADMIN) || 
+                            (p.getRole() == Role.COLEADER)
+                        ) ? 
+                        "leader" : ""
+                    )
+            );
+        }).toArray(String[]::new);
         if (members.length >= maxMembers) {
             String[] old = members;
             members = new String[maxMembers + 1];
             System.arraycopy(old, 0, members, 0, maxMembers);
-            members[maxMembers] = this.config.getString("translation.and-x-more").replace("%1", String.valueOf(members.length));
+            members[maxMembers] = this.config.getString("translation.and-x-more").replace("%1",
+                    String.valueOf(members.length));
         }
-        t = t.replace("%members%", String.join(templateSplit, members));
+        t = t.replace("%membersHTML%", String.join(templateSplit, members));
 
-        String[] membersDisplay = fac.getFPlayers().stream().map((r) -> {
-            Player p = Bukkit.getPlayer(r.getName());
-            if (p == null)
-                return r.getName();
-            return String.valueOf(p.displayName()).replace("`", "\\`").replace("${", "\\${");
-        }).toArray(String[]::new);
-        if (membersDisplay.length >= maxMembers) {
-            String[] old = membersDisplay;
-            membersDisplay = new String[maxMembers + 1];
-            System.arraycopy(old, 0, membersDisplay, 0, maxMembers);
-            membersDisplay[maxMembers] = this.config.getString("translation.and-x-more").replace("%1", String.valueOf(members.length));
+
+        String bannerUrl = this.config.getString("special-factions." + fac.getTag() + ".banner", "");
+        String iconUrl = this.config.getString("special-factions." + fac.getTag() + ".icon", "");
+        String discordUrl = this.config.getString("special-factions." + fac.getTag() + ".discord", "");
+
+
+        
+        getLogger().info('"' + fac.getTag() + '"');
+        getLogger().info("bannerUrl: " + bannerUrl + " iconUrl: " + iconUrl + " discordUrl: " + discordUrl);
+
+        if (bannerUrl != "") {
+            t = t.replace(
+                "%bannerHTML%",
+                this.config.getString("bannerHTML")
+                    .replace("%banner_url", bannerUrl)
+            );
+        } else {
+            t = t.replace("%bannerHTML%", "");
         }
-        t = t.replace("%member_display_names%", String.join(templateSplit, membersDisplay));
 
-        String[] membersUUID = fac.getFPlayers().stream().map((r) -> r.getId()).toArray(String[]::new);
-        if (membersUUID.length >= maxMembers) {
-            String[] old = membersUUID;
-            membersUUID = new String[maxMembers];
-            System.arraycopy(old, 0, membersUUID, 0, maxMembers);
+        if (iconUrl != "") {
+            t = t.replace(
+                "%iconHTML%",
+                this.config.getString("iconHTML")
+                    .replace("%icon_url%", iconUrl)
+            );
+        } else {
+            t = t.replace("%iconHTML%", "");
         }
-        t = t.replace("%member_uuids%", String.join(templateSplit, membersUUID));
 
-        t = t.replace("%mods%", String.join(", ",
-                fac.getFPlayersWhereRole(Role.MODERATOR).stream().map(FPlayer::getName).toArray(String[]::new)));
+        if (discordUrl != "") {
+            t = t.replace(
+                "%discordHTML%",
+                this.config.getString("discordHTML")
+                    .replace("%discord_link%", discordUrl)
+            );
+        } else {
+            t = t.replace("%discordHTML%", "");
+        }
+
 
         t = t.replace("%membercount%", "" + fac.getFPlayers().size());
 
@@ -187,7 +228,8 @@ public final class BlueMapFactions extends JavaPlugin {
         t = t.replace("%description%", fac.getDescription());
 
         t = t.replace("%trusted%", fac.getFPlayersWhereRole(Role.NORMAL).isEmpty() ? "None"
-                : fac.getFPlayersWhereRole(Role.NORMAL).stream().map(FPlayer::getName).collect(Collectors.joining(", ")));
+                : fac.getFPlayersWhereRole(Role.NORMAL).stream().map(FPlayer::getName)
+                        .collect(Collectors.joining(", ")));
 
         if (Econ.shouldBeUsed()) {
             t = t.replace("%balance%", String.valueOf(Econ.getBalance(fac)));
@@ -196,10 +238,6 @@ public final class BlueMapFactions extends JavaPlugin {
         t = t.replace("%open%", fac.getOpen() ? "true" : "false");
 
         t = t.replace("%peaceful%", fac.isPeaceful() ? "true" : "false");
-
-        t = t.replace("%icon_url%", this.config.getString("special-factions." + fac.getTag() + ".icon"));
-
-        t = t.replace("%banner_url%", this.config.getString("special-factions." + fac.getTag() + ".banner"));
 
         return t;
     }
@@ -222,6 +260,9 @@ public final class BlueMapFactions extends JavaPlugin {
                 markers.clear();
 
                 for (Faction fac : factions) {
+                    if (!fac.isNormal()) {
+                        continue;
+                    }
                     Stream<FLocation> allClaims = fac.getAllClaims().stream();
 
                     List<List<Vector2d>> borders = new ArrayList<>();
@@ -243,8 +284,9 @@ public final class BlueMapFactions extends JavaPlugin {
                                 .lineColor(getLineColor(fac))
                                 .lineWidth(this.config.getInt("style.border-width"))
                                 .fillColor(getFillColor(fac))
-                                .depthTestEnabled(false)
-                                .shape(new Shape(area), 0, 255)
+                                .depthTestEnabled(this.config.getBoolean("style.depth-test"))
+                                .shape(new Shape(area), this.config.getInt("style.min-y-height"),
+                                        this.config.getInt("style.max-y-height"))
                                 .centerPosition()
                                 .build();
                         markers.put("factions." + facName + ".area." + seq, chunkMarker);

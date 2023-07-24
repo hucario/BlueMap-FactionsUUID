@@ -5,4 +5,4 @@ author: 'Hucario <gritty.pen4969@hucar.io>, Antti <antti@antti.codes>'
 main: io.hucar.bluemapfactions.BlueMapFactions
 api-version: 1.16
 folia-supported: true
-depend: [ BlueMap, Factions ]
+depend: [ BlueMap, Factions, PlaceholderAPI ]
