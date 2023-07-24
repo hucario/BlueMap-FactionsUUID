@@ -181,9 +181,6 @@ public final class BlueMapFactions extends JavaPlugin {
         String discordUrl = this.config.getString("special-factions." + fac.getTag() + ".discord", "");
 
 
-        
-        getLogger().info('"' + fac.getTag() + '"');
-        getLogger().info("bannerUrl: " + bannerUrl + " iconUrl: " + iconUrl + " discordUrl: " + discordUrl);
 
         if (bannerUrl != "") {
             t = t.replace(
